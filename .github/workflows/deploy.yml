@@ -1,0 +1,82 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # ============================================================
+      # Configure for your hosting provider below
+      # ============================================================
+      
+      # Example: AWS ECR + ECS deployment
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
+      #
+      # - name: Login to Amazon ECR
+      #   uses: aws-actions/amazon-ecr-login@v2
+      #
+      # - name: Build and push images
+      #   run: |
+      #     docker build -t $ECR_REGISTRY/lms-backend:$GITHUB_SHA ./backend
+      #     docker build -t $ECR_REGISTRY/lms-frontend:$GITHUB_SHA ./frontend
+      #     docker push $ECR_REGISTRY/lms-backend:$GITHUB_SHA
+      #     docker push $ECR_REGISTRY/lms-frontend:$GITHUB_SHA
+      #
+      # - name: Deploy to ECS
+      #   run: |
+      #     aws ecs update-service --cluster lms-cluster --service lms-backend --force-new-deployment
+      #     aws ecs update-service --cluster lms-cluster --service lms-frontend --force-new-deployment
+
+      # Example: Azure Container Registry + App Service
+      # - name: Login to Azure
+      #   uses: azure/login@v2
+      #   with:
+      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
+      #
+      # - name: Build and push to ACR
+      #   run: |
+      #     az acr build --registry $ACR_NAME --image lms-backend:$GITHUB_SHA ./backend
+      #     az acr build --registry $ACR_NAME --image lms-frontend:$GITHUB_SHA ./frontend
+
+      # Example: Google Cloud Run
+      # - name: Authenticate to GCP
+      #   uses: google-github-actions/auth@v2
+      #   with:
+      #     credentials_json: ${{ secrets.GCP_SA_KEY }}
+      #
+      # - name: Deploy to Cloud Run
+      #   uses: google-github-actions/deploy-cloudrun@v2
+      #   with:
+      #     service: lms-backend
+      #     region: us-central1
+      #     source: ./backend
+
+      - name: Deployment placeholder
+        run: |
+          echo "Deployment to ${{ github.event.inputs.environment }} would happen here."
+          echo "Configure this workflow for your specific hosting provider."
+          echo "See commented examples in .github/workflows/deploy.yml"
